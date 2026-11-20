@@ -4,6 +4,7 @@ import { logger } from './middlewares/log';
 const http = require('http');
 import cors from 'cors';
 import { MongoDB } from './utils/MongoDB';
+import storyRouter from './routers/storyRoute';
 require('dotenv').config()
 const app: express.Application = express()
 const server = http.createServer(app);
@@ -29,10 +30,14 @@ app.use(express.json({limit:'50mb'}));
 app.use(express.urlencoded({ extended: false }))
 app.use('/assets', express.static(process.env.assetsPath as string));
 
+app.use(storyRouter);
+app.get('/api/v1/health', (_req, res) => res.json({ status: 'ok', database: DB.getState() }));
+
 for (const route of router) {
   app.use(route.getRouter())
 }
 
-server.listen(process.env.PORT, () => {
-  logger.info('listening on *:'+process.env.PORT);
+const port = Number(process.env.PORT) || 3000;
+server.listen(port, () => {
+  logger.info('listening on *:' + port);
 });

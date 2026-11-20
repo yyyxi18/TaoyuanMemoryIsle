@@ -11,22 +11,17 @@ export class MongoDB {
         const url = `mongodb://${info.name}:${encodeURIComponent(info.password)}@${info.host}:${info.port}/${info.dbName}`;
 
         this.init(url).then(() => {
-
-            logger.info(`suscess: connet to mongoDB @${url}`);
             this.isConneted = true;
-
+            logger.info(`success: connected to MongoDB database ${info.dbName}`);
         }).catch(() => {
-
-            logger.error(`error: cannt connet to mongoDB @${url}`);
-
+            this.isConneted = false;
+            logger.error('error: cannot connect to MongoDB');
         })
 
     }
 
     async init(url: string) {
-        this.DB = await connect(url).catch(err=>{
-            logger.error(`error: cannt connet to mongoDB ${err}`);
-        });
+        this.DB = await connect(url);
     }
 
     getState():boolean{
